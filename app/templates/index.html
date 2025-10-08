@@ -1,0 +1,31 @@
+<!-- app/templates/index.html -->
+<!doctype html>
+<html>
+<head><title>Scientific Calculator</title></head>
+<body>
+  <h1>Scientific Calculator</h1>
+  <form id="calc" method="post" action="/api/compute">
+    <select name="operation" id="op">
+      <option value="sqrt">Square root</option>
+      <option value="factorial">Factorial</option>
+      <option value="ln">Natural log</option>
+      <option value="power">Power</option>
+    </select><br/><br/>
+    <label>x: <input name="x" /></label><br/>
+    <label>n (for factorial): <input name="n" /></label><br/>
+    <label>b (for power): <input name="b" /></label><br/>
+    <button type="submit">Compute</button>
+  </form>
+  <pre id="out"></pre>
+
+  <script>
+  document.getElementById('calc').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const resp = await fetch('/api/compute', { method: 'POST', body: fd});
+    const j = await resp.json();
+    document.getElementById('out').textContent = JSON.stringify(j, null, 2);
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+- name: Deploy Scientific Calculator container
+  hosts: webservers
+  become: true
+  vars:
+    image: "{{ image }}"    # passed as extra var from Jenkins, e.g. myuser/repo:tag
+    container_name: scientific_calculator
+    published_port: "5000:5000"
+  tasks:
+    - name: ensure docker python package for modules
+      pip:
+        name: docker
+      become: yes
+
+    - name: pull docker image
+      community.docker.docker_image:
+        name: "{{ image }}"
+        source: pull
+
+    - name: stop & remove existing container if present
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: absent
+        force_kill: yes
+        timeout: 10
+
+    - name: run container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ image }}"
+        state: started
+        restart_policy: always
+        published_ports:
+          - "{{ published_port }}"
