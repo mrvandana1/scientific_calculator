@@ -5,6 +5,7 @@ pipeline {
         IMAGE = "mrvandana1/scientific_calculator"
         TAG = "${env.BUILD_NUMBER}"
         FULL_IMAGE = "${IMAGE}:${TAG}"
+        PATH = "/usr/local/bin:${env.PATH}" 
     }
 
     stages {
