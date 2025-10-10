@@ -1,31 +1,147 @@
 <!-- app/templates/index.html -->
 <!doctype html>
-<html>
-<head><title>Scientific Calculator</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scientific Calculator</title>
+  <style>
+    /* Base layout */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0078d7, #00bfa5);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #222;
+    }
+
+    h1 {
+      color: #fff;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Calculator box */
+    .container {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      padding: 30px 40px;
+      width: 350px;
+      text-align: center;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    label, select, input {
+      font-size: 1rem;
+      display: block;
+      margin: 10px auto;
+      width: 90%;
+      text-align: left;
+    }
+
+    select, input {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    select:focus, input:focus {
+      border-color: #0078d7;
+      outline: none;
+    }
+
+    button {
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 15px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    pre {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: left;
+      margin-top: 20px;
+      overflow-x: auto;
+      font-family: monospace;
+      max-height: 200px;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 15px;
+      color: #fff;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
 <body>
-  <h1>Scientific Calculator</h1>
-  <form id="calc" method="post" action="/api/compute">
-    <select name="operation" id="op">
-      <option value="sqrt">Square root</option>
-      <option value="factorial">Factorial</option>
-      <option value="ln">Natural log</option>
-      <option value="power">Power</option>
-    </select><br/><br/>
-    <label>x: <input name="x" /></label><br/>
-    <label>n (for factorial): <input name="n" /></label><br/>
-    <label>b (for power): <input name="b" /></label><br/>
-    <button type="submit">Compute</button>
-  </form>
-  <pre id="out"></pre>
+  <h1>Scientific Calculator ⚙️</h1>
+
+  <div class="container">
+    <form id="calc" method="post" action="/api/compute">
+      <label for="op">Operation:</label>
+      <select name="operation" id="op" required>
+        <option value="">--Select--</option>
+        <option value="sqrt">Square root</option>
+        <option value="factorial">Factorial</option>
+        <option value="ln">Natural log (ln)</option>
+        <option value="power">Power (x^b)</option>
+      </select>
+
+      <label>x: <input type="number" step="any" name="x" /></label>
+      <label>n (for factorial): <input type="number" name="n" /></label>
+      <label>b (for power): <input type="number" step="any" name="b" /></label>
+
+      <button type="submit">Compute</button>
+    </form>
+
+    <pre id="out">{ "result": "..." }</pre>
+  </div>
+
+  <footer>Made with ❤️ by Mohan</footer>
 
   <script>
-  document.getElementById('calc').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const resp = await fetch('/api/compute', { method: 'POST', body: fd});
-    const j = await resp.json();
-    document.getElementById('out').textContent = JSON.stringify(j, null, 2);
-  });
+    const form = document.getElementById('calc');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const resp = await fetch('/api/compute', { method: 'POST', body: fd });
+      const resultBox = document.getElementById('out');
+      try {
+        const json = await resp.json();
+        resultBox.textContent = JSON.stringify(json, null, 2);
+      } catch {
+        resultBox.textContent = "Error: Invalid response.";
+      }
+    });
   </script>
 </body>
 </html>
+

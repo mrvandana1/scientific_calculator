@@ -66,12 +66,38 @@ pipeline {
         }
     }
 
+
     post {
         success {
-            echo "OMG SUCCESS: Build ${env.BUILD_NUMBER} completed successfully!"
-        }
-        failure {
-            echo "Shit FAILURE: Build ${env.BUILD_NUMBER} failed. Check console logs."
+            echo "✅ SUCCESS: Build ${env.BUILD_NUMBER} completed successfully!"
+            mail to: 'vandanamohanaraj@gmail.com',
+                 subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: """Hey Mohan,
+
+                    My Jenkins build completed successfully Damyn
+
+                    Details:
+                    - Job: ${env.JOB_NAME}
+                    - Build number: ${env.BUILD_NUMBER}
+                    - Image: ${env.FULL_IMAGE}
+
+                    You can check the full logs here:
+                    ${env.BUILD_URL}
+                    """
+                            }
+                            failure {
+                                echo "FAILURE: Build ${env.BUILD_NUMBER} failed. Check console logs."
+                                mail to: 'vandanamohanaraj@gmail.com',
+                                    subject: "FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                                    body: """Hey Mohan,you failed here bro Your Jenkins build *failed* 
+
+                                        Details:
+                                        - Job: ${env.JOB_NAME}
+                                        - Build number: ${env.BUILD_NUMBER}
+
+                                        Check console output here:
+                                        ${env.BUILD_URL}
+                                        """
         }
     }
 }
